@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Tra cứu vận đơn</title>
+  <meta charset="UTF-8" />
+  <style>
+    body { font-family: Arial; padding: 20px; max-width: 600px; margin: auto; }
+    input { padding: 10px; width: 100%; margin-top: 10px; }
+    button { padding: 10px 20px; margin-top: 10px; }
+    .result { margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h2>Tra cứu vận đơn</h2>
+  <input type="text" id="trackingInput" placeholder="Nhập mã vận đơn..." />
+  <button onclick="lookup()">Tra cứu</button>
+  <div class="result" id="resultBox"></div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyzbar6eDfVaJpKyGbdSWY9zUrO0Ssw1f7dgR5WYTO60xzKv1stS3iy5bdX8dKOy1ZO2A/exec"; // Thay bằng URL từ bước 2
+
+    async function lookup() {
+      const code = document.getElementById("trackingInput").value.trim();
+      if (!code) return alert("Vui lòng nhập mã vận đơn.");
+
+      const resBox = document.getElementById("resultBox");
+      resBox.innerHTML = "Đang tra cứu...";
+      try {
+        const res = await fetch(`${API_URL}?code=${code}`);
+        const data = await res.json();
+        if (data.error) {
+          resBox.innerHTML = "Không tìm thấy vận đơn.";
+        } else {
+          resBox.innerHTML = `
+            <strong>Mã đơn:</strong> ${data.trackingNumber}<br/>
+            <strong>Người gửi:</strong> ${data.senderName}<br/>
+            <strong>Người nhận:</strong> ${data.receiverName}<br/>
+            <strong>Trạng thái:</strong> ${data.status}<br/>
+            <strong>Lịch sử:</strong><br/>${data.history.replaceAll("||", "<br/>")}
+          `;
+        }
+      } catch (err) {
+        resBox.innerHTML = "Lỗi kết nối, vui lòng thử lại.";
+      }
+    }
+  </script>
+</body>
+</html>
