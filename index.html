@@ -1,46 +1,74 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="vi">
 <head>
-  <title>TRA CỨU VẬN ĐƠN</title>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tra cứu vận đơn</title>
   <style>
-    body { font-family: Arial; padding: 20px; max-width: 600px; margin: auto; }
-    input { padding: 10px; width: 100%; margin-top: 10px; }
-    button { padding: 10px 20px; margin-top: 10px; }
-    .result { margin-top: 20px; padding: 15px; background: #f9f9f9; border-radius: 6px; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+    h1 { color: #000; }
+    input, button {
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 16px;
+    }
+    .result {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f9f9f9;
+      border: 1px solid #ddd;
+    }
+    .error {
+      color: red;
+      margin-top: 20px;
+    }
   </style>
 </head>
 <body>
-  <h2>TRA CỨU VẬN ĐƠN</h2>
-  <input type="text" id="trackingInput" placeholder="Nhập mã vận đơn..." />
-  <button onclick="lookup()">Tra cứu</button>
-  <div class="result" id="resultBox"></div>
+  <h1>TRA CỨU VẬN ĐƠN</h1>
+  <input type="text" id="trackingNumber" placeholder="Nhập mã vận đơn (ví dụ: HAKAGO2201405)" size="40" />
+  <br>
+  <button onclick="track()">Tra cứu</button>
+  <div class="result" id="result"></div>
+  <div class="error" id="error"></div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbwRJrMrYf342_wYceG5ZSMCyXLnKHoiFKaNQQzJSFfjdxjrYJgJmgO-FkZnsgNOOCoLDQ/exec"; // <-- THAY API Ở ĐÂY
+    const API_URL = "https://script.google.com/macros/s/AKfycbwRJrMrYf342_wYceG5ZSMCyXLnKHoiFKaNQQzJSFfjdxjrYJgJmgO-FkZnsgNOOCoLDQ/exec";
 
-    async function lookup() {
-      const code = document.getElementById("trackingInput").value.trim();
-      if (!code) return alert("Vui lòng nhập mã vận đơn.");
+    async function track() {
+      const code = document.getElementById("trackingNumber").value.trim();
+      const resultEl = document.getElementById("result");
+      const errorEl = document.getElementById("error");
+      resultEl.innerHTML = "";
+      errorEl.innerText = "";
 
-      const resBox = document.getElementById("resultBox");
-      resBox.innerHTML = "Đang tra cứu...";
+      if (!code) {
+        errorEl.innerText = "Vui lòng nhập mã vận đơn.";
+        return;
+      }
+
       try {
-        const res = await fetch(`${API_URL}?code=${code}`);
-        const data = await res.json();
-        if (data.error) {
-          resBox.innerHTML = "Không tìm thấy vận đơn.";
+        const response = await fetch(API_URL + "?code=" + encodeURIComponent(code));
+        const data = await response.json();
+
+        if (data.status === "not_found") {
+          errorEl.innerText = "Không tìm thấy vận đơn.";
         } else {
-          resBox.innerHTML = `
-            <strong>Mã đơn:</strong> ${data.trackingNumber}<br/>
-            <strong>Người gửi:</strong> ${data.senderName}<br/>
-            <strong>Người nhận:</strong> ${data.receiverName}<br/>
-            <strong>Trạng thái:</strong> ${data.status}<br/>
-            <strong>Lịch sử:</strong><br/>${data.history.replaceAll("||", "<br/>")}
+          resultEl.innerHTML = `
+            <strong>Người gửi:</strong> ${data.senderName}<br>
+            <strong>Người nhận:</strong> ${data.receiverName}<br>
+            <strong>Trạng thái:</strong> ${data.status}<br>
+            <strong>Lịch sử:</strong><br>${data.history.replaceAll("\n", "<br>")}
           `;
         }
-      } catch (err) {
-        resBox.innerHTML = "Lỗi kết nối, vui lòng thử lại.";
+      } catch (error) {
+        errorEl.innerText = "Lỗi kết nối, vui lòng thử lại.";
       }
     }
   </script>
