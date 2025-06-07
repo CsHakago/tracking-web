@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Tra cứu vận đơn</title>
+  <title>TRA CỨU VẬN ĐƠN</title>
   <meta charset="UTF-8" />
   <style>
     body { font-family: Arial; padding: 20px; max-width: 600px; margin: auto; }
@@ -11,13 +11,13 @@
   </style>
 </head>
 <body>
-  <h2>Tra cứu vận đơn</h2>
+  <h2>TRA CỨU VẬN ĐƠN</h2>
   <input type="text" id="trackingInput" placeholder="Nhập mã vận đơn..." />
   <button onclick="lookup()">Tra cứu</button>
   <div class="result" id="resultBox"></div>
 
   <script>
-    const API_URL = "https://script.google.com/macros/s/AKfycbyzbar6eDfVaJpKyGbdSWY9zUrO0Ssw1f7dgR5WYTO60xzKv1stS3iy5bdX8dKOy1ZO2A/exec"; // Thay bằng URL từ bước 2
+    const API_URL = "https://script.google.com/macros/s/AKfycbwRJrMrYf342_wYceG5ZSMCyXLnKHoiFKaNQQzJSFfjdxjrYJgJmgO-FkZnsgNOOCoLDQ/exec"; // <-- THAY API Ở ĐÂY
 
     async function lookup() {
       const code = document.getElementById("trackingInput").value.trim();
